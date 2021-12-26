@@ -1,54 +1,103 @@
-import { getUserWithUsername, postToJSON, firestore } from '/lib/firebase';
-import { query, collection, where, getDocs, limit, orderBy, getFirestore } from 'firebase/firestore';
-import UserProfile from '/components/UserProfile';
+import styles from '/styles/Post.module.css';
+import PostContent from '/components/PostContent';
+import HeartButton from '/components/HeartButton';
+import AuthCheck from '/components/AuthCheck';
 import Metatags from '/components/Metatags';
-import PostFeed from '/components/PostFeed';
+import { UserContext } from '/lib/context';
+import { firestore, getUserWithUsername, postToJSON } from '@lib/firebase';
+import { doc, getDocs, getDoc, collectionGroup, query, limit, getFirestore } from 'firebase/firestore';
 
 
-export async function getServerSideProps({ query: urlQuery }) {
-   const { username } = urlQuery;
+import Link from 'next/link';
+import { useDocumentData } from 'react-firebase-hooks/firestore';
+import { useContext } from 'react';
 
+
+export async function getStaticProps({ params }) {
+   const { username, slug } = params;
    const userDoc = await getUserWithUsername(username);
 
-   // If no user, short circuit to 404 page
-   if (!userDoc) {
-      return {
-         notFound: true,
-      };
-   }
-
-   // JSON serializable data
-   let user = null;
-   let posts = null;
+   let post;
+   let path;
 
    if (userDoc) {
-      user = userDoc.data();
-      // const postsQuery = userDoc.ref
-      //   .collection('posts')
-      //   .where('published', '==', true)
-      //   .orderBy('createdAt', 'desc')
-      //   .limit(5);
+      // const postRef = userDoc.ref.collection('posts').doc(slug);
+      const postRef = doc(getFirestore(), userDoc.ref.path, 'posts', slug);
 
-      const postsQuery = query(
-         collection(getFirestore(), userDoc.ref.path, 'posts'),
-         where('published', '==', true),
-         orderBy('createdAt', 'desc'),
-         limit(5)
-      );
-      posts = (await getDocs(postsQuery)).docs.map(postToJSON);
+      // post = postToJSON(await postRef.get());
+      post = postToJSON(await getDoc(postRef));
+
+      path = postRef.path;
    }
 
    return {
-      props: { user, posts }, // will be passed to the page component as props
+      props: { post, path },
+      revalidate: 100,
    };
 }
 
-export default function UserProfilePage({ user, posts }) {
+export async function getStaticPaths() {
+   // Improve my using Admin SDK to select empty docs
+   const q = query(
+      collectionGroup(getFirestore(), 'posts'),
+      limit(20)
+   )
+   const snapshot = await getDocs(q);
+
+   const paths = snapshot.docs.map((doc) => {
+      const { slug, username } = doc.data();
+      return {
+         params: { username, slug },
+      };
+   });
+
+   return {
+      // must be in this format:
+      // paths: [
+      //   { params: { username, slug }}
+      // ],
+      paths,
+      fallback: 'blocking',
+   };
+}
+
+export default function Post(props) {
+   const postRef = doc(getFirestore(), props.path);
+   const [realtimePost] = useDocumentData(postRef);
+
+   const post = realtimePost || props.post;
+
+   const { user: currentUser } = useContext(UserContext);
+
    return (
-      <main>
-         <Metatags title={user.username} description={`${user.username}'s public profile`} />
-         <UserProfile user={user} />
-         <PostFeed posts={posts} />
+      <main className={styles.container}>
+         <Metatags title={post.title} description={post.title} />
+
+         <section>
+            <PostContent post={post} />
+         </section>
+
+         <aside className="card">
+            <p>
+               <strong>{post.heartCount || 0} 🤍</strong>
+            </p>
+
+            <AuthCheck
+               fallback={
+                  <Link href="/enter">
+                     <button>💗 Sign Up</button>
+                  </Link>
+               }
+            >
+               <HeartButton postRef={postRef} />
+            </AuthCheck>
+
+            {currentUser?.uid === post.uid && (
+               <Link href={`/admin/${post.slug}`}>
+                  <button className="btn-blue">Edit Post</button>
+               </Link>
+            )}
+         </aside>
       </main>
    );
 }

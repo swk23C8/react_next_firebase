@@ -57,7 +57,7 @@ function PostManager() {
 }
 
 function PostForm({ defaultValues, postRef, preview }) {
-   const { register, formState: {errors}, handleSubmit, formState, reset, watch } = useForm({ defaultValues, mode: 'onChange' });
+   const { register, errors, handleSubmit, formState, reset, watch } = useForm({ defaultValues, mode: 'onChange' });
 
    const { isValid, isDirty } = formState;
 
@@ -86,7 +86,7 @@ function PostForm({ defaultValues, postRef, preview }) {
 
             <textarea
                name="content"
-               {...register('content',{
+               ref={register({
                   maxLength: { value: 20000, message: 'content is too long' },
                   minLength: { value: 10, message: 'content is too short' },
                   required: { value: true, message: 'content is required' },
