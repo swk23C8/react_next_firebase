@@ -1,18 +1,15 @@
-import { firestore, auth } from '@lib/firebase';
-import { useDocument } from 'react-firebase-hooks/firestore';
-import { increment, writeBatch, doc, getFirestore } from "firebase/firestore";
-
+import { firestore, auth, increment } from "@lib/firebase";
+import { useDocument } from "react-firebase-hooks/firestore";
 
 // Allows user to heart or like a post
-export default function Heart({ postRef }) {
-  // Listen to heart document for currently logged in user
-  const heartRef = doc(getFirestore(), 'hearts', auth.currentUser.uid);
+export default function Heart({ postRef, heartCount }) {
+  const heartRef = postRef.collection("hearts").doc(auth.currentUser.uid);
   const [heartDoc] = useDocument(heartRef);
 
   // Create a user-to-post relationship
   const addHeart = async () => {
     const uid = auth.currentUser.uid;
-    const batch = writeBatch(getFirestore());
+    const batch = firestore.batch();
 
     batch.update(postRef, { heartCount: increment(1) });
     batch.set(heartRef, { uid });
@@ -22,7 +19,7 @@ export default function Heart({ postRef }) {
 
   // Remove a user-to-post relationship
   const removeHeart = async () => {
-    const batch = writeBatch(getFirestore());
+    const batch = firestore.batch();
 
     batch.update(postRef, { heartCount: increment(-1) });
     batch.delete(heartRef);
@@ -31,8 +28,8 @@ export default function Heart({ postRef }) {
   };
 
   return heartDoc?.exists ? (
-    <button onClick={removeHeart}>💔 Unheart</button>
+    <button onClick={removeHeart}>{heartCount} 💖</button>
   ) : (
-    <button onClick={addHeart}>💗 Heart</button>
+    <button onClick={addHeart}>{heartCount} 💛</button>
   );
 }

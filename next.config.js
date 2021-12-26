@@ -1,6 +1,6 @@
 module.exports = {
-    swcMinify: true,
-    experimental: {
-      esmExternals: false
-    }
-}
+  reactStrictMode: true,
+  images: {
+    domains: ["lh3.googleusercontent.com"],
+  },
+};

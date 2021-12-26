@@ -1,7 +1,11 @@
-import Link from 'next/link';
+import Link from "next/link";
 
 export default function PostFeed({ posts, admin }) {
-  return posts ? posts.map((post) => <PostItem post={post} key={post.slug} admin={admin} />) : null;
+  return posts
+    ? posts.map((post) => (
+        <PostItem post={post} key={post.slug} admin={admin} />
+      ))
+    : null;
 }
 
 function PostItem({ post, admin = false }) {
@@ -11,36 +15,36 @@ function PostItem({ post, admin = false }) {
 
   return (
     <div className="card">
-      <Link href={`/${post.username}`}>
-        <a>
-          <strong>By @{post.username}</strong>
-        </a>
-      </Link>
-
-      <Link href={`/${post.username}/${post.slug}`}>
-        <h2>
-          <a>{post.title}</a>
-        </h2>
-      </Link>
-
+      <div className="headup">
+        <Link href={`/${post.username}/${post.slug}`} passHref>
+          <h2>
+            <a>{post.title}</a>
+          </h2>
+        </Link>
+        <Link href={`/${post.username}`}>
+          <a className="author">By #{post.username}</a>
+        </Link>
+      </div>
       <footer>
         <span>
-          {wordCount} words. {minutesToRead} min read
+          {wordCount} words | {minutesToRead} min read |
         </span>
         <span className="push-left">💗 {post.heartCount || 0} Hearts</span>
       </footer>
 
       {/* If admin view, show extra controls for user */}
       {admin && (
-        <>
-          <Link href={`/admin/${post.slug}`}>
-            <h3>
-              <button className="btn-blue">Edit</button>
-            </h3>
+        <div className="admin-set">
+          <Link href={`/admin/${post.slug}`} passHref>
+            <button className="blue-button">Edit</button>
           </Link>
 
-          {post.published ? <p className="text-success">Live</p> : <p className="text-danger">Unpublished</p>}
-        </>
+          {post.published ? (
+            <p className="text-success">Live</p>
+          ) : (
+            <p className="text-danger">Unpublished</p>
+          )}
+        </div>
       )}
     </div>
   );

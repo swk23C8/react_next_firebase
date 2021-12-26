@@ -1,20 +1,19 @@
-import styles from '@styles/Admin.module.css';
-import AuthCheck from '@components/AuthCheck';
-import PostFeed from '@components/PostFeed';
-import { UserContext } from '@lib/context';
-import { firestore, auth } from '@lib/firebase';
-import { serverTimestamp, query, collection, orderBy, getFirestore, setDoc, doc } from 'firebase/firestore';
+import styles from "@styles/Admin.module.css";
+import AuthCheck from "@components/AuthCheck";
+import PostFeed from "@components/PostFeed";
+import { UserContext } from "@lib/context";
+import { firestore, auth, serverTimestamp } from "@lib/firebase";
 
-import { useContext, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useContext, useState } from "react";
+import { useRouter } from "next/router";
 
-import { useCollection } from 'react-firebase-hooks/firestore';
-import kebabCase from 'lodash.kebabcase';
-import toast from 'react-hot-toast';
+import { useCollection } from "react-firebase-hooks/firestore";
+import kebabCase from "lodash.kebabcase";
+import toast from "react-hot-toast";
 
 export default function AdminPostsPage(props) {
   return (
-    <main>
+    <main className="admin-main">
       <AuthCheck>
         <PostList />
         <CreateNewPost />
@@ -24,28 +23,36 @@ export default function AdminPostsPage(props) {
 }
 
 function PostList() {
-  // const ref = firestore.collection('users').doc(auth.currentUser.uid).collection('posts');
-  // const query = ref.orderBy('createdAt');
-
-  const ref = collection(getFirestore(), 'users', auth.currentUser.uid, 'posts')
-  const postQuery = query(ref, orderBy('createdAt'))
-
-  const [querySnapshot] = useCollection(postQuery);
+  const ref = firestore
+    .collection("users")
+    .doc(auth.currentUser.uid)
+    .collection("posts");
+  const query = ref.orderBy("createdAt");
+  const [querySnapshot] = useCollection(query);
 
   const posts = querySnapshot?.docs.map((doc) => doc.data());
 
   return (
-    <>
-      <h1>Manage your Posts</h1>
+    <div>
+      <h1
+        style={{
+          textAlign: "center",
+          fontSize: 30,
+          fontFamily: "Open Sans",
+          fontWeight: 300,
+        }}
+      >
+        Manage your Posts
+      </h1>
       <PostFeed posts={posts} admin />
-    </>
+    </div>
   );
 }
 
 function CreateNewPost() {
   const router = useRouter();
   const { username } = useContext(UserContext);
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState("");
 
   // Ensure slug is URL safe
   const slug = encodeURI(kebabCase(title));
@@ -57,7 +64,11 @@ function CreateNewPost() {
   const createPost = async (e) => {
     e.preventDefault();
     const uid = auth.currentUser.uid;
-    const ref = doc(getFirestore(), 'users', uid, 'posts', slug);
+    const ref = firestore
+      .collection("users")
+      .doc(uid)
+      .collection("posts")
+      .doc(slug);
 
     // Tip: give all fields a default value here
     const data = {
@@ -66,15 +77,15 @@ function CreateNewPost() {
       uid,
       username,
       published: false,
-      content: '# hello world!',
+      content: "# hello world!",
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       heartCount: 0,
     };
 
-    await setDoc(ref, data);
+    await ref.set(data);
 
-    toast.success('Post created!');
+    toast.success("Post created!");
 
     // Imperative navigation after doc is set
     router.push(`/admin/${slug}`);
@@ -88,10 +99,10 @@ function CreateNewPost() {
         placeholder="My Awesome Article!"
         className={styles.input}
       />
-      <p>
+      {/* <p>
         <strong>Slug:</strong> {slug}
-      </p>
-      <button type="submit" disabled={!isValid} className="btn-green">
+      </p> */}
+      <button type="submit" disabled={!isValid} className="green-button">
         Create New Post
       </button>
     </form>

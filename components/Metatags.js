@@ -1,9 +1,9 @@
-import Head from 'next/head';
+import Head from "next/head";
 
 export default function Metatags({
-  title = 'medium/dev.to clone',
-  description = 'ZHONG XINA',
-  image = 'https://pbs.twimg.com/profile_images/1427715634738208774/_yuPWpNo_400x400.jpg',
+  title = "code wind",
+  description = "learn to code by reading awesome coding blogs by code wind.",
+  image = "",
 }) {
   return (
     <Head>
