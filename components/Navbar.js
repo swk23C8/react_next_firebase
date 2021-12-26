@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { UserContext } from '../lib/context';
 import { auth } from '../lib/firebase';
-import { signOut } from 'firebase/auth';
 
 // Top navbar
 export default function Navbar() {
@@ -11,8 +10,8 @@ export default function Navbar() {
 
    const router = useRouter();
 
-   const signOutNow = () => {
-      signOut(auth);
+   const signOut = () => {
+      auth.signOut();
       router.reload();
    }
 
@@ -29,7 +28,7 @@ export default function Navbar() {
             {username && (
                <>
                   <li className="push-left">
-                     <button onClick={signOutNow}>Sign Out</button>
+                     <button onClick={signOut}>Sign Out</button>
                   </li>
                   <li>
                      <Link href="/admin">
