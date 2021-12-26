@@ -1,8 +1,8 @@
-import { auth, firestore, googleAuthProvider } from '../lib/firebase';
+import { auth, firestore, googleAuthProvider } from '@lib/firebase';
 import { doc, writeBatch, getDoc, getFirestore } from 'firebase/firestore';
 import { signInWithPopup, signInAnonymously, signOut } from 'firebase/auth';
-import { UserContext } from '../lib/context';
-import Metatags from '../components/Metatags';
+import { UserContext } from '@lib/context';
+import Metatags from '@components/Metatags';
 
 import { useEffect, useState, useCallback, useContext } from 'react';
 import debounce from 'lodash.debounce';

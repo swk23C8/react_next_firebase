@@ -1,8 +1,8 @@
-import styles from '/styles/Admin.module.css';
-import AuthCheck from '/components/AuthCheck';
-import PostFeed from '/components/PostFeed';
-import { UserContext } from '/lib/context';
-import { firestore, auth } from '/lib/firebase';
+import styles from '@styles/Admin.module.css';
+import AuthCheck from '@components/AuthCheck';
+import PostFeed from '@components/PostFeed';
+import { UserContext } from '@lib/context';
+import { firestore, auth } from '@lib/firebase';
 import { serverTimestamp, query, collection, orderBy, getFirestore, setDoc, doc } from 'firebase/firestore';
 
 import { useContext, useState } from 'react';

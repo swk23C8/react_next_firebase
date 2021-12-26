@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { auth, storage, STATE_CHANGED } from '../lib/firebase';
+import { auth, storage, STATE_CHANGED } from '@lib/firebase';
 import Loader from './Loader';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
