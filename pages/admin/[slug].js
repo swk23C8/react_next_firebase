@@ -1,8 +1,8 @@
-import styles from '../styles/Admin.module.css';
-import AuthCheck from '../components/AuthCheck';
-import { firestore, auth } from '../lib/firebase';
+import styles from '/styles/Admin.module.css';
+import AuthCheck from '/components/AuthCheck';
+import { firestore, auth } from '/lib/firebase';
 import { serverTimestamp, doc, deleteDoc, updateDoc, getFirestore } from 'firebase/firestore';
-import ImageUploader from '../components/ImageUploader';
+import ImageUploader from '/components/ImageUploader';
 
 import { useState } from 'react';
 import { useRouter } from 'next/router';
@@ -57,7 +57,7 @@ function PostManager() {
 }
 
 function PostForm({ defaultValues, postRef, preview }) {
-   const { register, errors, handleSubmit, formState, reset, watch } = useForm({ defaultValues, mode: 'onChange' });
+   const { register, formState: {errors}, handleSubmit, formState, reset, watch } = useForm({ defaultValues, mode: 'onChange' });
 
    const { isValid, isDirty } = formState;
 
@@ -86,7 +86,7 @@ function PostForm({ defaultValues, postRef, preview }) {
 
             <textarea
                name="content"
-               ref={register({
+               {...register('content',{
                   maxLength: { value: 20000, message: 'content is too long' },
                   minLength: { value: 10, message: 'content is too short' },
                   required: { value: true, message: 'content is required' },

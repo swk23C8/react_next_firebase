@@ -1,4 +1,4 @@
-import { getUserWithUsername, postToJSON, firestore } from '../lib/firebase';
+import { getUserWithUsername, postToJSON, firestore } from '/lib/firebase';
 import { query, collection, where, getDocs, limit, orderBy, getFirestore } from 'firebase/firestore';
 import UserProfile from '../components/UserProfile';
 import Metatags from '../components/Metatags';
