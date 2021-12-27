@@ -14,7 +14,7 @@ export default function Navbar() {
       <ul>
         <li>
           <Link href="/" passHref>
-            <button className="btn-logo">FIRE NEWS</button>
+            <button className="btn-logo">Four Seasons</button>
           </Link>
         </li>
 
