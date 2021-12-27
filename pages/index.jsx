@@ -42,7 +42,7 @@ export default function Home(props) {
 
   return (
     <main>
-      <Metatags title="Fire News" />
+      <Metatags title="Four Seasons" />
       <h1>Recent News</h1>
 
       <PostFeed posts={posts} />
