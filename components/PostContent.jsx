@@ -8,11 +8,13 @@ export default function PostContent({ post }) {
     <div className="card">
       <h1>{post?.title}</h1>
       <span className="text-sm">
-        Written by{' '}
+        {/* uncomment to add username */}
+        
+        {/* Written by{' '}
         <Link href={`/${post?.username}/`}>
           <a className="text-info">@{post?.username}</a>
-        </Link>{' '}
-        on {postDate.toISOString()}
+        </Link>{' '} */}
+        posted on {postDate.toLocaleString()}
       </span>
       <ReactMarkdown>{post?.content}</ReactMarkdown>
     </div>
